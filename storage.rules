@@ -1,0 +1,38 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAllowedImage() {
+      return request.resource.contentType.matches('image/.*') &&
+             request.resource.size < 10 * 1024 * 1024; // 10 MB maximum
+    }
+
+    // Public garage and workshop photos
+    match /garages/{garageId}/{allImages=**} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isAllowedImage();
+    }
+
+    // Breakdown and emergency request photos
+    match /emergencies/{requestId}/{allImages=**} {
+      allow read: if true;
+      allow write: if isAllowedImage();
+    }
+
+    // Customer review photos
+    match /reviews/{reviewId}/{allImages=**} {
+      allow read: if true;
+      allow write: if isAllowedImage();
+    }
+
+    // User profile logos
+    match /users/{userId}/{allImages=**} {
+      allow read: if true;
+      allow write: if isAuthenticated() && request.auth.uid == userId && isAllowedImage();
+    }
+  }
+}

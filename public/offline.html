@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Offline Mode | TRUCK RESCUE INDIA</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: #090d16; color: #f1f5f9; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+    .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 20px; padding: 32px 24px; max-width: 480px; width: 100%; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(234,88,12,0.1); border: 1px solid rgba(234,88,12,0.3); color: #fb923c; border-radius: 9999px; font-size: 12px; font-weight: 700; margin-bottom: 16px; }
+    h1 { font-size: 24px; font-weight: 900; margin-bottom: 8px; color: #ffffff; }
+    p { font-size: 14px; color: #94a3b8; line-height: 1.5; margin-bottom: 24px; }
+    .hotline-box { background: #1e293b; border-radius: 12px; padding: 16px; margin-bottom: 20px; text-align: left; }
+    .hotline-title { font-size: 12px; text-transform: uppercase; font-weight: 800; color: #ea580c; margin-bottom: 6px; letter-spacing: 0.5px; }
+    .hotline-num { font-size: 20px; font-weight: 800; color: #34d399; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .actions { display: flex; flex-direction: column; gap: 10px; }
+    .btn { display: block; width: 100%; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 14px; text-decoration: none; border: none; cursor: pointer; transition: all 0.2s; }
+    .btn-retry { background: #ea580c; color: white; }
+    .btn-retry:hover { background: #c2410c; }
+    .btn-call { background: #059669; color: white; }
+    .btn-call:hover { background: #047857; }
+    .safety-tips { margin-top: 24px; text-align: left; font-size: 12px; color: #64748b; border-top: 1px solid #1e293b; pt: 16px; padding-top: 16px; }
+    .safety-tips li { margin-bottom: 6px; list-style-type: none; display: flex; gap: 6px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">
+      <span>● No Internet Connection</span>
+    </div>
+    <h1>You are Currently Offline</h1>
+    <p>Highway internet connection lost. Don't worry, your emergency safety contacts are still available offline.</p>
+
+    <div class="hotline-box">
+      <div class="hotline-title">Emergency Toll-Free Assistance (24x7)</div>
+      <a href="tel:1800889988" class="hotline-num">📞 1800-889-988</a>
+      <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">NHAI National Highway Emergency: <strong>1033</strong></div>
+    </div>
+
+    <div class="actions">
+      <button onclick="window.location.reload()" class="btn btn-retry">↻ Retry Connection</button>
+      <a href="tel:1800889988" class="btn btn-call">📞 Call Central Helpline</a>
+    </div>
+
+    <div class="safety-tips">
+      <strong>Highway Safety Rules While Stranded:</strong>
+      <ul style="margin-top: 8px;">
+        <li>⚠️ Turn ON your hazard indicator flashers immediately.</li>
+        <li>🔺 Place reflective warning triangles 50 meters behind truck.</li>
+        <li>🛑 Park vehicle fully on highway shoulder away from moving lanes.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

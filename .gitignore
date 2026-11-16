@@ -1,0 +1,59 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing & Coverage
+/coverage
+
+# Next.js Build Outputs
+/.next/
+/out/
+/build
+
+# TypeScript Build Info
+*.tsbuildinfo
+
+# Vercel Deployment Cache
+/.vercel
+
+# Debug Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment Variables & Secrets (NEVER UPLOAD TO GITHUB)
+.env
+.env*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Firebase Credentials & Service Accounts
+*serviceAccount*.json
+*service-account*.json
+*firebase-admin*.json
+*adminsdk*.json
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+
+# Private Keys & Certificates
+*.pem
+*.key
+*.cert
+*.crt
+
+# IDE & OS Files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Mobile builds
+flutter_app/build/
+flutter_app/.dart_tool/

@@ -1,0 +1,145 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper authorization functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.admin == true || 
+         exists(/databases/$(database)/documents/admin_users/$(request.auth.uid)));
+    }
+
+    function isApprovedActive(data) {
+      return data.verificationStatus == 'verified' && data.isActive == true;
+    }
+
+    // Public Garages Directory
+    match /mechanic_garages/{garageId} {
+      allow read: if isApprovedActive(resource.data) || 
+                     isOwner(resource.data.uid) || 
+                     isAdmin();
+      
+      allow create: if isAuthenticated() && 
+                       request.resource.data.uid == request.auth.uid &&
+                       request.resource.data.verificationStatus == 'pending' &&
+                       request.resource.data.garageName is string &&
+                       request.resource.data.phone is string;
+      
+      allow update: if (isOwner(resource.data.uid) && 
+                        request.resource.data.uid == resource.data.uid &&
+                        request.resource.data.verificationStatus == resource.data.verificationStatus &&
+                        request.resource.data.rating == resource.data.rating) ||
+                       isAdmin();
+      
+      allow delete: if isAdmin();
+    }
+
+    // Customer Reviews & Ratings (Phase 5)
+    match /reviews/{reviewId} {
+      allow read: if resource.data.status != 'hidden' || isAdmin();
+      allow create: if request.resource.data.rating >= 1 && 
+                       request.resource.data.rating <= 5 &&
+                       request.resource.data.comment.size() >= 2;
+      allow update: if (isAuthenticated() && resource.data.driverUid == request.auth.uid) || isAdmin();
+      allow delete: if (isAuthenticated() && resource.data.driverUid == request.auth.uid) || isAdmin();
+    }
+
+    // Customer Complaints & Disputes (Phase 6)
+    match /complaints/{complaintId} {
+      allow create: if request.resource.data.description.size() >= 5;
+      allow read: if (isAuthenticated() && resource.data.userUid == request.auth.uid) || isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    // Immutable Platform Audit Trail (Phase 6)
+    match /audit_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin();
+      allow update, delete: if false; // strictly immutable audit trail
+    }
+
+    // User Accounts (Phase 6)
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create, update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Subscriptions & Monetization (Phase 7)
+    match /subscriptions/{subscriptionId} {
+      allow read: if (isAuthenticated() && resource.data.ownerUid == request.auth.uid) || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /subscription_plans/{planId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Payment Transactions Ledger (Phase 7)
+    match /payment_transactions/{transactionId} {
+      allow read: if (isAuthenticated() && resource.data.userUid == request.auth.uid) || isAdmin();
+      allow create: if isAdmin();
+      allow update, delete: if false; // immutable financial transaction ledger
+    }
+
+    // Advertisements (Phase 7)
+    match /advertisements/{adId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Emergency Breakdown & Roadside Assistance Requests (Phase 3)
+    match /emergency_requests/{requestId} {
+      allow read: if true;
+      allow create: if request.resource.data.driverPhone is string &&
+                       request.resource.data.vehicleNumber is string &&
+                       request.resource.data.breakdownCategory is string &&
+                       request.resource.data.status in ['pending', 'searching'];
+      allow update: if isAdmin() ||
+                       (isAuthenticated() && resource.data.driverUid == request.auth.uid && request.resource.data.status == 'cancelled') ||
+                       (resource.data.status in ['pending', 'searching'] && request.resource.data.status == 'accepted') ||
+                       (request.resource.data.status in ['accepted', 'mechanic_on_way', 'reached_location', 'work_in_progress', 'completed', 'cancelled', 'searching']);
+      allow delete: if isAdmin();
+    }
+
+    // Driver Enquiries
+    match /enquiries/{enquiryId} {
+      allow create: if true;
+      allow read, update: if isAuthenticated() && 
+                            (resource.data.garageUid == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Driver Garage Reports
+    match /garage_reports/{reportId} {
+      allow create: if request.resource.data.reason is string &&
+                       request.resource.data.garageId is string;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Service Categories
+    match /service_categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Platform Settings & Admin Users (Strictly Admin only)
+    match /admin_users/{userId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /app_settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
